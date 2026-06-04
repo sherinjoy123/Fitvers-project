@@ -1,21 +1,131 @@
-import React from "react"
+import React, { useState } from "react"
 import { motion } from "framer-motion"
 
-import {FaUser,FaEnvelope,FaLock,FaGoogle,FaApple,FaDumbbell,} from "react-icons/fa"
+import {
+  FaUser,
+  FaEnvelope,
+  FaLock,
+  FaGoogle,
+  FaApple,
+  FaDumbbell,
+} from "react-icons/fa"
 
-import { NavLink } from "react-router-dom"
+import { NavLink, useNavigate } from "react-router-dom"
 
+import API from "../services/api"
 
 const Register = () => {
 
-    
+  const navigate = useNavigate()
+
+  // STATES
+  const [username, setUsername] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [loading, setLoading] = useState(false)
+
+  // ERROR STATES
+  const [errors, setErrors] = useState({})
+
+  // VALIDATION FUNCTION
+  const validateForm = () => {
+
+    let newErrors = {}
+
+    // USERNAME
+    if (!username.trim()) {
+      newErrors.username = "Username is required"
+    } else if (username.length < 3) {
+      newErrors.username = "Username must be at least 3 characters"
+    }
+
+    // EMAIL
+    if (!email.trim()) {
+      newErrors.email = "Email is required"
+    } else if (
+      !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)
+    ) {
+      newErrors.email = "Invalid email address"
+    }
+
+    // PASSWORD
+    if (!password) {
+      newErrors.password = "Password is required"
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters"
+    }
+
+    // CONFIRM PASSWORD
+    if (!confirmPassword) {
+      newErrors.confirmPassword = "Confirm your password"
+    } else if (password !== confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match"
+    }
+
+    setErrors(newErrors)
+
+    return Object.keys(newErrors).length === 0
+  }
+
+  // REGISTER FUNCTION
+  const handleRegister = async (e) => {
+
+    e.preventDefault()
+
+    if (!validateForm()) {
+      return
+    }
+
+    try {
+
+      setLoading(true)
+
+      const result = await API.post("/api/auth/register", {
+        name:username,
+        email,
+        password,
+      })
+
+      console.log(result.data)
+
+      alert("Registration Successful")
+
+      // CLEAR FORM
+      setUsername("")
+      setEmail("")
+      setPassword("")
+      setConfirmPassword("")
+
+      // REDIRECT TO LOGIN
+      navigate("/login")
+
+    } catch (err) {
+
+      console.log(err)
+
+      if (err.response?.data?.message) {
+        alert(err.response.data.message)
+      } else {
+        alert("Registration Failed")
+      }
+
+    } finally {
+
+      setLoading(false)
+
+    }
+
+  }
+
   return (
+
     <div className="min-h-screen bg-black text-white flex items-center justify-center px-6 py-20 overflow-hidden relative">
 
       {/* BACKGROUND GLOW */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-red-500/20 blur-3xl rounded-full"></div>
+      <div className="absolute top-0 left-0 w-96 h-96 bg-red-500/20 blur-3xl rounded-full pointer-events-none"></div>
 
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-red-500/10 blur-3xl rounded-full"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-red-500/10 blur-3xl rounded-full pointer-events-none"></div>
 
       {/* REGISTER CARD */}
       <motion.div
@@ -41,7 +151,9 @@ const Register = () => {
             <div className="flex items-center gap-4">
 
               <div className="bg-red-500 p-4 rounded-2xl shadow-lg shadow-red-500/30">
+
                 <FaDumbbell className="text-3xl" />
+
               </div>
 
               <h1 className="text-5xl font-extrabold">
@@ -51,13 +163,18 @@ const Register = () => {
             </div>
 
             <h2 className="text-5xl font-bold leading-tight mt-12">
+
               Start Your
               <span className="text-red-500"> Fitness Journey</span>
+
             </h2>
 
             <p className="text-gray-300 text-lg leading-8 mt-8">
-              Create your account and unlock workouts, AI diet plans,
-              live trainer sessions, reels, and community challenges.
+
+              Create your account and unlock workouts,
+              AI diet plans, trainer sessions,
+              reels, and fitness challenges.
+
             </p>
 
           </div>
@@ -78,9 +195,12 @@ const Register = () => {
             </p>
 
             {/* FORM */}
-            <form className="mt-12 space-y-6">
+            <form
+              onSubmit={handleRegister}
+              className="mt-12 space-y-6"
+            >
 
-              {/* NAME */}
+              {/* USERNAME */}
               <div>
 
                 <label className="text-gray-300">
@@ -95,9 +215,21 @@ const Register = () => {
                     type="text"
                     placeholder="Enter your full name"
                     className="bg-transparent w-full outline-none px-4"
+                    value={username}
+                    onChange={(e) =>
+                      setUsername(e.target.value)
+                    }
                   />
 
                 </div>
+
+                {
+                  errors.username && (
+                    <p className="text-red-500 text-sm mt-2">
+                      {errors.username}
+                    </p>
+                  )
+                }
 
               </div>
 
@@ -116,9 +248,21 @@ const Register = () => {
                     type="email"
                     placeholder="Enter your email"
                     className="bg-transparent w-full outline-none px-4"
+                    value={email}
+                    onChange={(e) =>
+                      setEmail(e.target.value)
+                    }
                   />
 
                 </div>
+
+                {
+                  errors.email && (
+                    <p className="text-red-500 text-sm mt-2">
+                      {errors.email}
+                    </p>
+                  )
+                }
 
               </div>
 
@@ -137,9 +281,21 @@ const Register = () => {
                     type="password"
                     placeholder="Create password"
                     className="bg-transparent w-full outline-none px-4"
+                    value={password}
+                    onChange={(e) =>
+                      setPassword(e.target.value)
+                    }
                   />
 
                 </div>
+
+                {
+                  errors.password && (
+                    <p className="text-red-500 text-sm mt-2">
+                      {errors.password}
+                    </p>
+                  )
+                }
 
               </div>
 
@@ -158,9 +314,21 @@ const Register = () => {
                     type="password"
                     placeholder="Confirm password"
                     className="bg-transparent w-full outline-none px-4"
+                    value={confirmPassword}
+                    onChange={(e) =>
+                      setConfirmPassword(e.target.value)
+                    }
                   />
 
                 </div>
+
+                {
+                  errors.confirmPassword && (
+                    <p className="text-red-500 text-sm mt-2">
+                      {errors.confirmPassword}
+                    </p>
+                  )
+                }
 
               </div>
 
@@ -178,12 +346,19 @@ const Register = () => {
 
               </div>
 
-              {/* REGISTER BUTTON */}
+              {/* BUTTON */}
               <button
                 type="submit"
+                disabled={loading}
                 className="w-full bg-red-500 hover:bg-red-600 py-4 rounded-2xl text-lg font-semibold transition duration-300 shadow-lg shadow-red-500/30"
               >
-                Create Account
+
+                {
+                  loading
+                    ? "Creating Account..."
+                    : "Create Account"
+                }
+
               </button>
 
             </form>
@@ -197,7 +372,7 @@ const Register = () => {
                 OR
               </p>
 
-              <div className="flex-1  bg-gray-800"></div>
+              <div className="flex-1 h-[1px] bg-gray-800"></div>
 
             </div>
 
@@ -223,15 +398,19 @@ const Register = () => {
             </div>
 
             {/* LOGIN */}
-            <p className="text-gray-400 text-center mt-10">
+            <p className="relative z-50 text-center text-sm text-gray-400 mt-6">
 
               Already have an account?
 
               <NavLink to="/login">
-            <span className="text-blue-600 cursor-pointer hover:underline">
-              Login
-            </span>
-          </NavLink>
+
+                <span className="text-blue-600 cursor-pointer hover:underline ml-2">
+
+                  Login
+
+                </span>
+
+              </NavLink>
 
             </p>
 
@@ -242,6 +421,7 @@ const Register = () => {
       </motion.div>
 
     </div>
+
   )
 }
 

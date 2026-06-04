@@ -15,7 +15,7 @@ import {
 
 const About = () => {
   return (
-    <div className="bg-black text-white overflow-hidden">
+    <div className="bg-black p-3 text-white overflow-hidden">
 
       {/* HERO SECTION */}
       <section className="relative min-h-screen flex items-center justify-center px-6 lg:px-20">

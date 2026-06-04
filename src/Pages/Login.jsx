@@ -1,7 +1,8 @@
-import React from "react"
+import React, { useState } from "react"
 import { motion } from "framer-motion"
 import { useNavigate } from "react-router-dom"
 
+import API from "../services/api"
 
 import {
   FaEnvelope,
@@ -11,24 +12,138 @@ import {
   FaDumbbell,
 } from "react-icons/fa"
 
-import { NavLink } from "react-router-dom"
-
-
-
-
 const Login = () => {
-  const navigate  = useNavigate()
 
-  
+  const navigate = useNavigate()
 
-  
+  // FORM STATE
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  })
+
+  // ERROR STATE
+  const [errors, setErrors] = useState({})
+
+  // LOADING STATE
+  const [loading, setLoading] = useState(false)
+
+  // HANDLE CHANGE
+  const handleChange = (e) => {
+
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    })
+
+  }
+
+  // VALIDATION
+  const validateForm = () => {
+
+    let newErrors = {}
+
+    // EMAIL
+    if (!formData.email.trim()) {
+
+      newErrors.email = "Email is required"
+
+    } else if (
+      !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(formData.email)
+    ) {
+
+      newErrors.email = "Invalid email address"
+
+    }
+
+    // PASSWORD
+    if (!formData.password.trim()) {
+
+      newErrors.password = "Password is required"
+
+    } else if (formData.password.length < 6) {
+
+      newErrors.password =
+        "Password must be at least 6 characters"
+
+    }
+
+    setErrors(newErrors)
+
+    return Object.keys(newErrors).length === 0
+
+  }
+
+  // LOGIN FUNCTION
+  const handleLogin = async (e) => {
+
+    e.preventDefault()
+
+    if (!validateForm()) {
+      return
+    }
+
+    try {
+
+      setLoading(true)
+
+      const result = await API.post(
+        "/api/auth/login",
+        formData
+      )
+      
+
+      console.log(result.data)
+
+      // SAVE TOKEN
+      localStorage.setItem(
+        "token",
+        result.data.token
+      )
+
+      // SAVE USER
+      localStorage.setItem(
+        "user",
+        JSON.stringify(result.data.user)
+      )
+
+      alert("Login Successful")
+
+      window.location.href = "/"
+
+      // REDIRECT
+      navigate("/")
+
+    } catch (error) {
+
+      console.log(error)
+
+      if (error.response?.data) {
+
+        alert(error.response.data)
+
+      } else {
+
+        alert("Login Failed")
+
+      }
+
+    } finally {
+
+      setLoading(false)
+
+    }
+
+  }
+
   return (
+
     <div className="min-h-screen bg-black text-white flex items-center justify-center px-6 py-20 overflow-hidden relative">
 
       {/* BACKGROUND GLOW */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-red-500/20 blur-3xl rounded-full"></div>
+      <div className="absolute top-0 left-0 w-96 h-96 bg-red-500/20 blur-3xl rounded-full pointer-events-none"></div>
 
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-red-500/10 blur-3xl rounded-full"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-red-500/10 blur-3xl rounded-full pointer-events-none"></div>
 
       {/* LOGIN CARD */}
       <motion.div
@@ -54,7 +169,9 @@ const Login = () => {
             <div className="flex items-center gap-4">
 
               <div className="bg-red-500 p-4 rounded-2xl shadow-lg shadow-red-500/30">
+
                 <FaDumbbell className="text-3xl" />
+
               </div>
 
               <h1 className="text-5xl font-extrabold">
@@ -64,13 +181,20 @@ const Login = () => {
             </div>
 
             <h2 className="text-5xl font-bold leading-tight mt-12">
+
               Transform Your
-              <span className="text-red-500"> Fitness Journey</span>
+              <span className="text-red-500">
+                {" "}Fitness Journey
+              </span>
+
             </h2>
 
             <p className="text-gray-300 text-lg leading-8 mt-8">
-              Join the ultimate fitness community with AI diet plans,
-              live trainer sessions, workout tracking, and fitness reels.
+
+              Join the ultimate fitness community with
+              AI diet plans, trainer sessions,
+              workout tracking, and fitness reels.
+
             </p>
 
           </div>
@@ -91,7 +215,10 @@ const Login = () => {
             </p>
 
             {/* FORM */}
-            <form  className="mt-12 space-y-6">
+            <form
+              onSubmit={handleLogin}
+              className="mt-12 space-y-6"
+            >
 
               {/* EMAIL */}
               <div>
@@ -105,12 +232,23 @@ const Login = () => {
                   <FaEnvelope className="text-gray-500 text-lg" />
 
                   <input
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     type="email"
                     placeholder="Enter your email"
                     className="bg-transparent w-full outline-none px-4"
                   />
 
                 </div>
+
+                {
+                  errors.email && (
+                    <p className="text-red-500 text-sm mt-2">
+                      {errors.email}
+                    </p>
+                  )
+                }
 
               </div>
 
@@ -126,12 +264,23 @@ const Login = () => {
                   <FaLock className="text-gray-500 text-lg" />
 
                   <input
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
                     type="password"
                     placeholder="Enter your password"
                     className="bg-transparent w-full outline-none px-4"
                   />
 
                 </div>
+
+                {
+                  errors.password && (
+                    <p className="text-red-500 text-sm mt-2">
+                      {errors.password}
+                    </p>
+                  )
+                }
 
               </div>
 
@@ -160,11 +309,17 @@ const Login = () => {
 
               {/* LOGIN BUTTON */}
               <button
-
                 type="submit"
+                disabled={loading}
                 className="w-full bg-red-500 hover:bg-red-600 py-4 rounded-2xl text-lg font-semibold transition duration-300 shadow-lg shadow-red-500/30"
               >
-                Login
+
+                {
+                  loading
+                    ? "Logging In..."
+                    : "Login"
+                }
+
               </button>
 
             </form>
@@ -204,20 +359,18 @@ const Login = () => {
             </div>
 
             {/* REGISTER */}
-             <p className="text-center text-sm text-gray-600 mt-6">
-  Don’t have an account?{" "}
-{/*   
-  <NavLink
-    to="/register"
-    className="text-blue-600 hover:underline"
-  >
-    Sign up
-  </NavLink> */}
-  <button onClick={() => navigate("/register")}>
-  Register
-</button>
+            <p className="relative z-50 text-center text-sm text-gray-400 mt-6">
 
-</p> 
+  Don’t have an account?
+
+  <button
+    onClick={() => navigate("/register")}
+    className="text-blue-500 hover:underline ml-2 cursor-pointer"
+  >
+    Register
+  </button>
+
+</p>
 
           </div>
 
@@ -226,6 +379,7 @@ const Login = () => {
       </motion.div>
 
     </div>
+
   )
 }
 

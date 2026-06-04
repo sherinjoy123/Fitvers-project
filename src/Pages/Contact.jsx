@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { motion } from "framer-motion"
 
 import {
@@ -14,7 +14,49 @@ import {
 } from "react-icons/fa"
 
 const Contact = () => {
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+    subject: "",
+  })
+
+  // HANDLE INPUT CHANGE
+  const handleChange = (e) => {
+
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    })
+
+  }
+
+  // HANDLE SUBMIT
+  const handleSubmit = (e) => {
+
+    e.preventDefault()
+
+    const phoneNumber = "917356052049"
+
+    const text = `
+Name: ${formData.name}
+
+Email: ${formData.email}
+
+Subject: ${formData.subject}
+
+Message: ${formData.message}
+    `
+
+    const whatsappUrl =
+      `https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`
+
+    window.open(whatsappUrl, "_blank")
+  }
+
   return (
+
     <div className="bg-black text-white overflow-hidden min-h-screen">
 
       {/* BACKGROUND GLOW */}
@@ -83,7 +125,7 @@ const Contact = () => {
               We would love to hear from you.
               Whether you're a fitness enthusiast,
               trainer, or business partner, feel free
-              to reach out to us anytime.
+              to reach out anytime.
 
             </p>
 
@@ -93,9 +135,7 @@ const Contact = () => {
               <div className="flex items-start gap-5">
 
                 <div className="bg-red-500/20 text-red-500 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl">
-
                   <FaEnvelope />
-
                 </div>
 
                 <div>
@@ -108,10 +148,6 @@ const Contact = () => {
                     support@fitverse.com
                   </p>
 
-                  <p className="text-gray-500 text-sm mt-1">
-                    We reply within 24 hours
-                  </p>
-
                 </div>
 
               </div>
@@ -119,9 +155,7 @@ const Contact = () => {
               <div className="flex items-start gap-5">
 
                 <div className="bg-red-500/20 text-red-500 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl">
-
                   <FaPhoneAlt />
-
                 </div>
 
                 <div>
@@ -131,11 +165,7 @@ const Contact = () => {
                   </h3>
 
                   <p className="text-gray-400 mt-2">
-                    +91 98765 43210
-                  </p>
-
-                  <p className="text-gray-500 text-sm mt-1">
-                    Monday - Saturday, 9AM - 8PM
+                    +91 73560 52049
                   </p>
 
                 </div>
@@ -145,9 +175,7 @@ const Contact = () => {
               <div className="flex items-start gap-5">
 
                 <div className="bg-red-500/20 text-red-500 w-16 h-16 rounded-2xl flex items-center justify-center text-2xl">
-
                   <FaMapMarkerAlt />
-
                 </div>
 
                 <div>
@@ -158,10 +186,6 @@ const Contact = () => {
 
                   <p className="text-gray-400 mt-2">
                     Kochi, Kerala, India
-                  </p>
-
-                  <p className="text-gray-500 text-sm mt-1">
-                    FitVerse HQ & Fitness Studio
                   </p>
 
                 </div>
@@ -213,15 +237,10 @@ const Contact = () => {
               Send Message
             </h2>
 
-            <p className="text-gray-400 leading-8 mt-6 text-lg">
-
-              Fill out the form below and our team
-              will get back to you as soon as possible.
-
-            </p>
-
-            {/* FORM */}
-            <form className="mt-12 space-y-8">
+            <form
+              onSubmit={handleSubmit}
+              className="mt-12 space-y-8"
+            >
 
               {/* NAME */}
               <div>
@@ -231,9 +250,13 @@ const Contact = () => {
                 </label>
 
                 <input
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
                   type="text"
                   placeholder="Enter your name"
                   className="w-full mt-3 bg-[#111] border border-gray-800 focus:border-red-500 outline-none rounded-2xl px-6 py-5 transition duration-300"
+                  required
                 />
 
               </div>
@@ -246,9 +269,13 @@ const Contact = () => {
                 </label>
 
                 <input
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   type="email"
                   placeholder="Enter your email"
                   className="w-full mt-3 bg-[#111] border border-gray-800 focus:border-red-500 outline-none rounded-2xl px-6 py-5 transition duration-300"
+                  required
                 />
 
               </div>
@@ -261,9 +288,13 @@ const Contact = () => {
                 </label>
 
                 <input
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
                   type="text"
                   placeholder="Enter subject"
                   className="w-full mt-3 bg-[#111] border border-gray-800 focus:border-red-500 outline-none rounded-2xl px-6 py-5 transition duration-300"
+                  required
                 />
 
               </div>
@@ -276,9 +307,13 @@ const Contact = () => {
                 </label>
 
                 <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
                   rows="6"
                   placeholder="Write your message..."
                   className="w-full mt-3 bg-[#111] border border-gray-800 focus:border-red-500 outline-none rounded-2xl px-6 py-5 transition duration-300 resize-none"
+                  required
                 ></textarea>
 
               </div>
@@ -303,26 +338,27 @@ const Contact = () => {
 
       </section>
 
-      {/* MAP SECTION */}
-      <section className="px-6 lg:px-20 pb-24">
+      <section>
+      
 
-        <motion.div
-          initial={{ opacity: 0, y: 80 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
-          className="rounded-[40px] overflow-hidden border border-gray-800"
-        >
+    
+      <div className="w-full max-w-6xl mx-auto rounded-3xl overflow-hidden border border-gray-800 shadow-xl">
 
-          <iframe
-            title="map"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62883.91892762467!2d76.267304!3d9.931233!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b080d3d2f3e2c3b%3A0x3f8b1f4c7c7d7d7!2sKochi%2C%20Kerala!5e0!3m2!1sen!2sin!4v1710000000000!5m2!1sen!2sin"
-            className="w-full h-[500px]"
-            allowFullScreen=""
-            loading="lazy"
-          ></iframe>
+        <iframe
+          title="gym-location"
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3946.3123456789!2d76.9366!3d8.5241!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba35b8c1c1c1c1c%3A0x123456789abcdef!2sGym!5e0!3m2!1sen!2sin!4v1710000000000"
+          width="100%"
+          height="450"
+          loading="lazy"
+          style={{ border: 0 }}
+          allowFullScreen=""
+          referrerPolicy="no-referrer-when-downgrade"
+        ></iframe>
 
-        </motion.div>
+   
 
+   </div>
+        
       </section>
 
     </div>

@@ -1,5 +1,5 @@
 import React from "react"
-
+import logo from "../assets/logo.png"
 import {
   FaInstagram,
   FaYoutube,
@@ -24,9 +24,9 @@ const Footer = () => {
 
             <div className="flex items-center gap-3">
 
-              <div className="bg-red-500 p-3 rounded-xl shadow-lg shadow-red-500/30">
-                <FaDumbbell className="text-white text-xl" />
-              </div>
+            <div onClick={()=>navigate('/')} className="bg-red-500 p-1  shadow-lg shadow-red-500/30">
+              <img src={logo} className="text-xl size-10" alt="" />
+            </div>
 
               <h1 className="text-3xl font-extrabold">
                 <span className="text-white">Fit</span>

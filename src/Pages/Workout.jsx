@@ -1,5 +1,6 @@
 import React from "react"
 import { motion } from "framer-motion"
+import { useNavigate } from "react-router-dom"
 
 import Chest from "../assets/chest.jpg"
 import Back from "../assets/Back2.jpg"
@@ -10,13 +11,15 @@ import Leg from "../assets/leg.jpg"
 import Abs from "../assets/abs.jpg"
 import Hero from "../assets/hero.jpg"
 
+import muscle from "../assets/muscleGain.jpg"
+import fatlose from "../assets/fatlose.jpg"
+import Hiit from "../assets/hiitTraing.jpg"
+import Homeworkout from "../assets/homeWorkout.jpg"
+
 import {
-  FaDumbbell,
   FaFire,
   FaHeartbeat,
-  FaRunning,
   FaClock,
-  FaPlay,
   FaCalculator,
 } from "react-icons/fa"
 
@@ -71,53 +74,55 @@ const workouts = [
   },
 ]
 
-const exercises = [
+const programs = [
   {
-    name: "Bench Press",
-    muscle: "Chest",
-    sets: "4 Sets",
+    title: "Muscle Gain",
+    image: muscle,
   },
 
   {
-    name: "Deadlift",
-    muscle: "Back",
-    sets: "5 Sets",
+    title: "Fat Loss",
+    image: fatlose,
   },
 
   {
-    name: "Squats",
-    muscle: "Legs",
-    sets: "4 Sets",
+    title: "HIIT Training",
+    image: Hiit,
   },
 
   {
-    name: "Shoulder Press",
-    muscle: "Shoulders",
-    sets: "3 Sets",
-  },
-]
-
-const plans = [
-  {
-    title: "Beginner Transformation",
-    duration: "30 Days",
-    level: "Beginner",
+    title: "Home Workout",
+    image: Homeworkout,
   },
 
   {
-    title: "Muscle Gain Program",
-    duration: "90 Days",
-    level: "Advanced",
+    title: "Weight Gain",
+    image:
+      "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?q=80&w=1200&auto=format&fit=crop",
   },
 
   {
-    title: "Fat Loss Challenge",
-    duration: "45 Days",
-    level: "Intermediate",
+    title: "Cardio Blast",
+    image:
+      "https://images.unsplash.com/photo-1517963879433-6ad2b056d712?q=80&w=1200&auto=format&fit=crop",
+  },
+
+  {
+    title: "Yoga Flow",
+    image:
+      "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=1200&auto=format&fit=crop",
+  },
+
+  {
+    title: "Strength Training",
+    image:
+      "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1200&auto=format&fit=crop",
   },
 ]
 
 const Workout = () => {
+
+  const navigate = useNavigate()
   return (
     <div className="bg-black text-white overflow-hidden min-h-screen relative">
 
@@ -127,51 +132,34 @@ const Workout = () => {
       <div className="fixed bottom-0 right-0 w-96 h-96 bg-red-500/10 blur-3xl rounded-full"></div>
 
       {/* HERO SECTION */}
-      <section className="relative px-6 lg:px-20 pt-32 pb-24 z-10">
+      <section className="relative px-6 lg:px-20 min-h-screen flex items-center z-10">
 
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-16 items-center">
 
           {/* LEFT */}
           <motion.div
             initial={{ opacity: 0, x: -80 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1 }}
+            className="flex flex-col justify-center"
           >
 
-            <div className="inline-flex items-center gap-3 bg-[#111] border border-gray-800 px-5 py-3 rounded-full mb-8">
+            <div>
 
-              <FaDumbbell className="text-red-500" />
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight">
 
-              <p className="uppercase text-sm tracking-widest text-gray-300">
-                Workout Dashboard
+                Train Hard
+                <span className="text-red-500"> Stay Strong</span>
+
+              </h1>
+
+              <p className="text-gray-400 text-lg leading-8 mt-8 max-w-xl">
+
+                Discover powerful workouts, track your progress,
+                calculate BMI, and stay consistent with premium
+                fitness programs inside FitVerse.
+
               </p>
-
-            </div>
-
-            <h1 className="text-5xl lg:text-7xl font-black leading-tight">
-
-              Train Hard
-              <span className="text-red-500"> Stay Strong</span>
-
-            </h1>
-
-            <p className="text-gray-400 text-lg leading-8 mt-8 max-w-xl">
-
-              Discover powerful workouts, track your progress,
-              calculate BMI, and stay consistent with premium
-              fitness programs inside FitVerse.
-
-            </p>
-
-            <div className="flex flex-wrap gap-5 mt-10">
-
-              <button className="bg-red-500 hover:bg-red-600 px-8 py-4 rounded-2xl font-semibold transition duration-300 shadow-lg shadow-red-500/30">
-                Start Workout
-              </button>
-
-              <button className="border border-gray-700 hover:border-red-500 px-8 py-4 rounded-2xl font-semibold transition duration-300">
-                Explore Plans
-              </button>
 
             </div>
 
@@ -182,12 +170,13 @@ const Workout = () => {
             initial={{ opacity: 0, x: 80 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1 }}
+            className="flex justify-center"
           >
 
             <img
               src={Hero}
               alt="hero"
-              className="rounded-[40px] h-[700px] w-full object-cover"
+              className="rounded-[40px] h-[500px] sm:h-[650px] lg:h-[700px] w-full object-cover shadow-2xl"
             />
 
           </motion.div>
@@ -211,13 +200,15 @@ const Workout = () => {
 
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-16">
+        {/* SLIDER */}
+        <div className="flex gap-8 mt-16 overflow-x-auto scroll-smooth pb-4 no-scrollbar">
 
           {workouts.map((item, index) => (
+
             <motion.div
               key={index}
               whileHover={{ y: -10 }}
-              className="bg-[#0f0f0f] border border-gray-800 rounded-[30px] overflow-hidden hover:border-red-500 transition duration-300"
+              className="min-w-[320px] bg-[#0f0f0f] border border-gray-800 rounded-[30px] overflow-hidden hover:border-red-500 transition duration-300 flex-shrink-0"
             >
 
               <img
@@ -252,7 +243,7 @@ const Workout = () => {
 
                 </div>
 
-                <button className="w-full mt-8 bg-red-500 hover:bg-red-600 py-4 rounded-2xl font-semibold transition duration-300">
+                <button onClick={()=>navigate('/workoutprograms')} className="w-full mt-8 bg-red-500 hover:bg-red-600 py-4 rounded-2xl font-semibold transition duration-300">
 
                   Start Workout
 
@@ -261,144 +252,218 @@ const Workout = () => {
               </div>
 
             </motion.div>
+
           ))}
 
         </div>
 
       </section>
 
-      {/* TODAY WORKOUT */}
-      <section className="px-6 lg:px-20 py-24 bg-[#0b0b0b] relative z-10">
+      {/* WORKOUT PROGRAMS */}
+      <section className="py-28 px-6 lg:px-20 bg-[#0a0a0a]">
 
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="max-w-7xl mx-auto">
 
-          {/* LEFT */}
-          <div>
+          {/* HEADING */}
+          <div className="text-center mb-20">
 
-            <h2 className="text-5xl font-black leading-tight">
+            <h2 className="text-5xl font-bold">
 
-              Today’s
-              <span className="text-red-500"> Workout Plan</span>
+              Popular
+              <span className="text-red-500"> Workout Programs</span>
 
             </h2>
 
-            <p className="text-gray-400 text-lg leading-8 mt-8">
+            <p className="text-gray-400 mt-6 text-lg">
 
-              Complete your workout and maintain your
-              consistency to achieve your dream physique.
+              Choose your training path and transform your fitness journey.
 
             </p>
 
-            <div className="space-y-6 mt-12">
+          </div>
 
-              {[
-                "Bench Press - 4 x 12",
-                "Incline Dumbbell Press - 3 x 10",
-                "Cable Fly - 3 x 15",
-                "Push Ups - 3 x 20",
-              ].map((item, index) => (
-                <div
-                  key={index}
-                  className="bg-black border border-gray-800 rounded-2xl px-6 py-5 flex items-center justify-between"
-                >
+          {/* SLIDER */}
+          <div className="flex gap-8 overflow-x-auto scroll-smooth pb-4 no-scrollbar">
 
-                  <div className="flex items-center gap-4">
+            {programs.map((program, index) => (
 
-                    <div className="w-12 h-12 bg-red-500/20 text-red-500 rounded-xl flex items-center justify-center">
+              <motion.div
+                key={index}
+                whileHover={{ y: -10 }}
+                className="relative min-w-[320px] overflow-hidden rounded-3xl border border-gray-800 group cursor-pointer flex-shrink-0"
+              >
 
-                      <FaPlay />
+                <img
+                  src={program.image}
+                  alt={program.title}
+                  className="h-[420px] w-full object-cover group-hover:scale-110 transition duration-700"
+                />
 
-                    </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
 
-                    <p className="text-lg">
-                      {item}
-                    </p>
+                <div className="absolute bottom-0 p-6 w-full">
 
-                  </div>
+                  <h3 className="text-3xl font-bold">
+                    {program.title}
+                  </h3>
 
-                  <button className="text-red-500 hover:text-red-400">
-                    Start
+                  <p className="text-gray-300 mt-3 leading-7">
+
+                    Transform your body with personalized training plans and expert guidance.
+
+                  </p>
+
+                  <button onClick={()=>navigate('/workoutprograms')} className="mt-5 bg-red-500 hover:bg-red-600 px-6 py-3 rounded-xl transition duration-300 font-semibold shadow-lg shadow-red-500/30">
+
+                    Start Program
+
                   </button>
 
                 </div>
-              ))}
 
-            </div>
+              </motion.div>
+
+            ))}
 
           </div>
 
-          {/* RIGHT */}
-          <div className="bg-black border border-gray-800 rounded-[40px] p-10">
+        </div>
 
-            <h3 className="text-3xl font-black">
-              Workout Progress
-            </h3>
+      </section>
 
-            <div className="space-y-8 mt-10">
+      {/* BMI CALCULATOR */}
+      <section className="px-6 lg:px-20 py-24 relative z-10">
 
-              <div>
+        <div className="bg-[#0f0f0f] border border-gray-800 rounded-[40px] p-10 lg:p-16">
 
-                <div className="flex justify-between mb-3">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
 
-                  <p className="text-gray-300">
-                    Daily Goal
+            {/* LEFT */}
+            <div>
+
+              <div className="flex items-center gap-4">
+
+                <div className="w-16 h-16 bg-red-500/20 text-red-500 rounded-2xl flex items-center justify-center text-2xl">
+
+                  <FaCalculator />
+
+                </div>
+
+                <h2 className="text-5xl font-black">
+                  BMI Calculator
+                </h2>
+
+              </div>
+
+              <p className="text-gray-400 text-lg leading-8 mt-8">
+
+                Check your Body Mass Index and understand
+                your health condition instantly.
+
+              </p>
+
+              <div className="mt-10 space-y-4">
+
+                <div className="flex items-center justify-between bg-black border border-gray-800 rounded-2xl p-5">
+
+                  <p className="text-gray-400">
+                    Underweight
                   </p>
 
-                  <p className="text-red-500">
-                    75%
+                  <p className="text-blue-400">
+                    Below 18.5
                   </p>
 
                 </div>
 
-                <div className="w-full h-4 bg-[#111] rounded-full overflow-hidden">
+                <div className="flex items-center justify-between bg-black border border-gray-800 rounded-2xl p-5">
 
-                  <div className="bg-red-500 h-full w-[75%] rounded-full"></div>
+                  <p className="text-gray-400">
+                    Normal
+                  </p>
+
+                  <p className="text-green-400">
+                    18.5 - 24.9
+                  </p>
+
+                </div>
+
+                <div className="flex items-center justify-between bg-black border border-gray-800 rounded-2xl p-5">
+
+                  <p className="text-gray-400">
+                    Overweight
+                  </p>
+
+                  <p className="text-yellow-400">
+                    25 - 29.9
+                  </p>
+
+                </div>
+
+                <div className="flex items-center justify-between bg-black border border-gray-800 rounded-2xl p-5">
+
+                  <p className="text-gray-400">
+                    Obesity
+                  </p>
+
+                  <p className="text-red-400">
+                    30+
+                  </p>
 
                 </div>
 
               </div>
 
-              <div>
+            </div>
 
-                <div className="flex justify-between mb-3">
+            {/* RIGHT */}
+            <div className="space-y-6">
 
-                  <p className="text-gray-300">
-                    Calories Burned
-                  </p>
+              <input
+                type="number"
+                placeholder="Enter Height (cm)"
+                className="w-full bg-black border border-gray-800 focus:border-red-500 outline-none rounded-2xl px-6 py-5 transition duration-300"
+              />
 
-                  <p className="text-red-500">
-                    620 kcal
-                  </p>
+              <input
+                type="number"
+                placeholder="Enter Weight (kg)"
+                className="w-full bg-black border border-gray-800 focus:border-red-500 outline-none rounded-2xl px-6 py-5 transition duration-300"
+              />
+
+              <button className="w-full bg-red-500 hover:bg-red-600 py-5 rounded-2xl text-lg font-semibold transition duration-300 shadow-lg shadow-red-500/30">
+
+                Calculate BMI
+
+              </button>
+
+              <div className="bg-black border border-gray-800 rounded-3xl p-8">
+
+                <div className="flex items-center justify-between">
+
+                  <div>
+
+                    <p className="text-gray-400">
+                      Your BMI
+                    </p>
+
+                    <h3 className="text-5xl font-black text-red-500 mt-2">
+                      22.4
+                    </h3>
+
+                  </div>
+
+                  <div className="w-24 h-24 rounded-full border-4 border-red-500 flex items-center justify-center">
+
+                    <FaHeartbeat className="text-4xl text-red-500" />
+
+                  </div>
 
                 </div>
 
-                <div className="w-full h-4 bg-[#111] rounded-full overflow-hidden">
-
-                  <div className="bg-red-500 h-full w-[60%] rounded-full"></div>
-
-                </div>
-
-              </div>
-
-              <div>
-
-                <div className="flex justify-between mb-3">
-
-                  <p className="text-gray-300">
-                    Workout Streak
-                  </p>
-
-                  <p className="text-red-500">
-                    12 Days
-                  </p>
-
-                </div>
-
-                <div className="w-full h-4 bg-[#111] rounded-full overflow-hidden">
-
-                  <div className="bg-red-500 h-full w-[90%] rounded-full"></div>
-
-                </div>
+                <p className="text-green-400 text-lg mt-6">
+                  Healthy Weight Range
+                </p>
 
               </div>
 
@@ -409,149 +474,6 @@ const Workout = () => {
         </div>
 
       </section>
-            {/* BMI CALCULATOR */}
-            <section className="px-6 lg:px-20 py-24 relative z-10">
-
-<div className="bg-[#0f0f0f] border border-gray-800 rounded-[40px] p-10 lg:p-16">
-
-  <div className="grid lg:grid-cols-2 gap-16 items-center">
-
-    {/* LEFT */}
-    <div>
-
-      <div className="flex items-center gap-4">
-
-        <div className="w-16 h-16 bg-red-500/20 text-red-500 rounded-2xl flex items-center justify-center text-2xl">
-
-          <FaCalculator />
-
-        </div>
-
-        <h2 className="text-5xl font-black">
-          BMI Calculator
-        </h2>
-
-      </div>
-
-      <p className="text-gray-400 text-lg leading-8 mt-8">
-
-        Check your Body Mass Index and understand
-        your health condition instantly.
-
-      </p>
-
-      <div className="mt-10 space-y-4">
-
-        <div className="flex items-center justify-between bg-black border border-gray-800 rounded-2xl p-5">
-
-          <p className="text-gray-400">
-            Underweight
-          </p>
-
-          <p className="text-blue-400">
-            Below 18.5
-          </p>
-
-        </div>
-
-        <div className="flex items-center justify-between bg-black border border-gray-800 rounded-2xl p-5">
-
-          <p className="text-gray-400">
-            Normal
-          </p>
-
-          <p className="text-green-400">
-            18.5 - 24.9
-          </p>
-
-        </div>
-
-        <div className="flex items-center justify-between bg-black border border-gray-800 rounded-2xl p-5">
-
-          <p className="text-gray-400">
-            Overweight
-          </p>
-
-          <p className="text-yellow-400">
-            25 - 29.9
-          </p>
-
-        </div>
-
-        <div className="flex items-center justify-between bg-black border border-gray-800 rounded-2xl p-5">
-
-          <p className="text-gray-400">
-            Obesity
-          </p>
-
-          <p className="text-red-400">
-            30+
-          </p>
-
-        </div>
-
-      </div>
-
-    </div>
-
-    {/* RIGHT */}
-    <div className="space-y-6">
-
-      <input
-        type="number"
-        placeholder="Enter Height (cm)"
-        className="w-full bg-black border border-gray-800 focus:border-red-500 outline-none rounded-2xl px-6 py-5 transition duration-300"
-      />
-
-      <input
-        type="number"
-        placeholder="Enter Weight (kg)"
-        className="w-full bg-black border border-gray-800 focus:border-red-500 outline-none rounded-2xl px-6 py-5 transition duration-300"
-      />
-
-      <button className="w-full bg-red-500 hover:bg-red-600 py-5 rounded-2xl text-lg font-semibold transition duration-300 shadow-lg shadow-red-500/30">
-
-        Calculate BMI
-
-      </button>
-
-      <div className="bg-black border border-gray-800 rounded-3xl p-8">
-
-        <div className="flex items-center justify-between">
-
-          <div>
-
-            <p className="text-gray-400">
-              Your BMI
-            </p>
-
-            <h3 className="text-5xl font-black text-red-500 mt-2">
-              22.4
-            </h3>
-
-          </div>
-
-          <div className="w-24 h-24 rounded-full border-4 border-red-500 flex items-center justify-center">
-
-            <FaHeartbeat className="text-4xl text-red-500" />
-
-          </div>
-
-        </div>
-
-        <p className="text-green-400 text-lg mt-6">
-          Healthy Weight Range
-        </p>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-</section>
 
     </div>
   )
