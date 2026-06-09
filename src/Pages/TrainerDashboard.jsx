@@ -132,6 +132,27 @@ function TrainerDashboard() {
 >
   {b.paymentStatus === "paid" ? "Chat" : "Payment Required"}
 </button>
+
+<button
+  onClick={() =>
+    navigate(`/assign-workout/${b.user._id}`)
+  }
+  className="mt-2 w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl"
+>
+  Assign Workout
+</button>
+
+
+<button
+  onClick={() =>
+    navigate(`/progress/${b.user._id}`)
+  }
+  className="mt-2 w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl"
+>
+  View Progress
+</button>
+
+
               </div>
             ))
           ) : (

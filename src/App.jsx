@@ -28,6 +28,9 @@ import TrainerLogin from "./Pages/TrainerLogin"
 import TrainerDashboard from "./Pages/TrainerDashboard"
 import TrainerChat from "./Pages/TrainerChat"
 import AdminLogin from "./admin/pages/AdminLogin"
+import MyWorkouts from "./Pages/MyWorkouts"
+import AssignWorkout from "./Pages/AssignWorkout"
+import ViewProgress from "./Pages/ViewProgress"
 
 // PAGE LOADER
 const PageLoader = ({ children }) => {
@@ -79,7 +82,8 @@ const App = () => {
           <Route path="/videocall" element={<VideoCall />} />
       
           <Route path="/fetchBooking" element={<FetchBooking/>}/>
-          
+          <Route path="/my-workouts" element={<MyWorkouts/>}/>
+         
 
           <Route
             path="/profile"
@@ -101,7 +105,8 @@ const App = () => {
           <Route path="/chat/:userId"element={<TrainerChat/>}/>
           <Route path="/chat" element={<Chat />} />
           <Route path="/admin-login" element={<AdminLogin/>}/>
-
+          <Route path="/assign-workout/:userId" element={<AssignWorkout/>}/>
+          <Route path="/progress/:userId" element={<ViewProgress/>}/>
       </Routes>
 
     </PageLoader>

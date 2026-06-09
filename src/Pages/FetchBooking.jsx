@@ -175,6 +175,13 @@ const FetchBooking = () => {
 
                                     </button>
 
+                                    <button
+  onClick={() => navigate("/my-workouts")}
+  className="w-full mt-8 bg-red-500 hover:bg-red-600 transition duration-300 py-4 rounded-2xl text-lg font-bold flex items-center justify-center gap-3 shadow-lg shadow-red-500/20"
+>
+  My Workouts
+</button>
+
                                 </div>
 
                             </motion.div>

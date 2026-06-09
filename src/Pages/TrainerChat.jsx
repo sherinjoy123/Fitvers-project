@@ -16,6 +16,8 @@ function TrainerChat() {
 
   const room = trainer?._id ? `room-${trainer._id}` : null;
 
+  console.log("TRAINER ROOM =", room);
+
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [onlineUsers, setOnlineUsers] = useState([]);
@@ -150,10 +152,33 @@ function TrainerChat() {
       console.log(error);
     }
   };
-
+  socket.on("incoming-call", (data) => {
+    setCallerSignal(data.signal);
+  });
   // =========================
-  // UI
-  // =========================
+  const answerCall = () => {
+    const peer = new Peer({
+      initiator: false,
+      trickle: false,
+      stream,
+    });
+  
+    peer.on("signal", (data) => {
+      socket.emit("answer-call", {
+        roomId,
+        signal: data,
+      });
+    });
+  
+    peer.on("stream", (remoteStream) => {
+      userVideo.current.srcObject = remoteStream;
+    });
+  
+    // 🔥 IMPORTANT LINE
+    peer.signal(callerSignal);
+  
+    connectionRef.current = peer;
+  };
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
 
@@ -164,8 +189,10 @@ function TrainerChat() {
   onClick={() =>
     navigate("/videocall", {
       state: {
-       userId:trainerId,
-       targetId:userId
+       roomId:room,
+       iscaller:true,
+       trainer,
+       user,
       }
     })
   }

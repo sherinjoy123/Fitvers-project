@@ -23,6 +23,9 @@ const Chat = () => {
 
   const room = trainer?._id ? `room-${trainer._id}` : null;
 
+  console.log("TRAINER =", trainer);
+console.log("ROOM =", room);
+
 
   // SCROLL TO BOTTOM
   useEffect(() => {
@@ -119,12 +122,19 @@ const Chat = () => {
     }
   };
   const startVideoCall = () => {
-    navigate("/video-call", {
+    console.log("VIDEO CALL STATE =", {
+      trainer,
+      user,
+      roomId: room,
+    });
+  
+    navigate("/videocall", {
       state: {
         trainer,
         user,
-        roomId,
-      }
+        roomId: room,
+        isCaller:true,
+      },
     });
   };
 
