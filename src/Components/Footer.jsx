@@ -1,11 +1,9 @@
-import React from "react"
 import logo from "../assets/logo.png"
 import {
   FaInstagram,
   FaYoutube,
   FaFacebookF,
   FaTwitter,
-  FaDumbbell,
 } from "react-icons/fa"
 
 import { Link } from "react-router-dom"
@@ -24,9 +22,9 @@ const Footer = () => {
 
             <div className="flex items-center gap-3">
 
-            <div onClick={()=>navigate('/')} className="bg-red-500 p-1  shadow-lg shadow-red-500/30">
-              <img src={logo} className="text-xl size-10" alt="" />
-            </div>
+            <Link to="/" className="bg-red-500 p-1 shadow-lg shadow-red-500/30">
+              <img src={logo} className="text-xl size-10" alt="FitVerse logo" />
+            </Link>
 
               <h1 className="text-3xl font-extrabold">
                 <span className="text-white">Fit</span>
@@ -95,10 +93,10 @@ const Footer = () => {
               </Link>
 
               <Link
-                to="/reels"
+                to="/gallery"
                 className="hover:text-red-500 transition duration-300"
               >
-                Reels
+                Gallery
               </Link>
 
               <Link

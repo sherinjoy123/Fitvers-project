@@ -1,6 +1,7 @@
 import React from "react"
 import { motion } from "framer-motion"
 import about from '../assets/about.jpg'
+import { useNavigate } from "react-router-dom"
 
 import {
   FaDumbbell,
@@ -14,6 +15,8 @@ import {
 } from "react-icons/fa"
 
 const About = () => {
+
+  const navigate = useNavigate()
   return (
     <div className="bg-black p-3 text-white overflow-hidden">
 
@@ -376,8 +379,8 @@ const About = () => {
 
           </p>
 
-          <button className="bg-black hover:bg-[#111] px-10 py-5 rounded-2xl font-bold mt-10 transition duration-300">
-            Get Started Now
+          <button onClick={()=>navigate("/trainers")} className="bg-black hover:bg-[#111] px-10 py-5 rounded-2xl font-bold mt-10 transition duration-300">
+            Get Started Now & Select Your Best Trainer
           </button>
 
         </div>

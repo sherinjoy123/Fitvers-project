@@ -23,7 +23,7 @@ const AssignWorkout = () => {
   };
 
   const assignWorkout = async () => {
-    const trainer = JSON.parse(localStorage.getItem("user"));
+    const trainer = JSON.parse(localStorage.getItem("trainer"));
     const trainerId = trainer._id;
 
     const workout = workouts.find((w) => w._id === selectedWorkout);

@@ -5,8 +5,6 @@ import {
   updateTrainerAPI,
 } from "../../services/trainerApi";
 
-import { FaDumbbell, FaStar, FaClock } from "react-icons/fa";
-
 const ManageTrainer = () => {
   const [trainers, setTrainers] = useState([]);
   const [showEdit, setShowEdit] = useState(false);
@@ -31,12 +29,8 @@ const ManageTrainer = () => {
   // DELETE
   const handleDelete = async (id) => {
     try {
-      const token = localStorage.getItem("token");
-
       await deleteTrainerAPI(id, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       alert("Trainer Deleted Successfully");
@@ -61,13 +55,8 @@ const ManageTrainer = () => {
         formData.append("image", image);
       }
 
-      const token = localStorage.getItem("token");
-
       await updateTrainerAPI(selectedTrainer._id, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       alert("Trainer Updated Successfully");

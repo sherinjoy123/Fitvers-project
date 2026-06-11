@@ -36,9 +36,10 @@ const AdminLogin = () => {
         email,
         password
       })
+      console.log(result.data);
 
       // ✅ FIXED HERE
-      localStorage.setItem("token", result.data.token)
+      localStorage.setItem("adminToken", result.data.token)
       localStorage.setItem("admin", JSON.stringify(result.data.admin))
 
       alert("Login Successful 🚀")

@@ -248,12 +248,9 @@ const Home = () => {
           </span>
         </div>
 
-        <button
-          onClick={() => setSelectedTrainer(items)}
-          className="w-full mt-6 bg-red-500 hover:bg-red-600 py-4 rounded-2xl"
-        >
-          Book Session
-        </button>
+        
+
+        
 
       </div>
 

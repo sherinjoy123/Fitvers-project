@@ -1,12 +1,11 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
-import io from "socket.io-client";
+import { useEffect, useRef, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import getSocket from "../services/socket";
 import { saveMessageAPI, getMessagesAPI } from "../services/chatApi";
 import { getUserByIdAPI } from "../services/userApi";
-import { useNavigate } from "react-router-dom";
 import { FaTimes } from "react-icons/fa";
 
-const socket = io("http://localhost:4000");
+const socket = getSocket();
 
 function TrainerChat() {
   const navigate = useNavigate()
@@ -48,6 +47,8 @@ function TrainerChat() {
   // LOAD MESSAGES
   // =========================
   useEffect(() => {
+    if (!trainer?._id || !userId) return;
+
     const loadMessages = async () => {
       try {
         const res = await getMessagesAPI(trainer._id, userId);
@@ -60,9 +61,7 @@ function TrainerChat() {
       }
     };
 
-    if (trainer?._id && userId) {
-      loadMessages();
-    }
+    loadMessages();
   }, [trainer?._id, userId]);
 
   // =========================
@@ -70,6 +69,7 @@ function TrainerChat() {
   // =========================
   useEffect(() => {
     if (room) {
+      console.log(room);
       socket.emit("join_room", room);
     }
   }, [room]);
@@ -120,9 +120,26 @@ function TrainerChat() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // =========================
-  // SEND MESSAGE
-  // =========================
+  // INCOMING VIDEO CALL
+  useEffect(() => {
+    const handleIncomingCall = (data) => {
+      if (window.confirm("Incoming video call from user. Answer?")) {
+        navigate("/videocall", {
+          state: {
+            roomId: room,
+            isCaller: false,
+            callerSignal: data.signal,
+            trainer,
+            user,
+          },
+        });
+      }
+    };
+
+    socket.on("incoming-call", handleIncomingCall);
+    return () => socket.off("incoming-call", handleIncomingCall);
+  }, [room, trainer, user, navigate]);
+
   const sendMessage = async () => {
     if (!message.trim()) return;
 
@@ -152,33 +169,15 @@ function TrainerChat() {
       console.log(error);
     }
   };
-  socket.on("incoming-call", (data) => {
-    setCallerSignal(data.signal);
-  });
-  // =========================
-  const answerCall = () => {
-    const peer = new Peer({
-      initiator: false,
-      trickle: false,
-      stream,
-    });
-  
-    peer.on("signal", (data) => {
-      socket.emit("answer-call", {
-        roomId,
-        signal: data,
-      });
-    });
-  
-    peer.on("stream", (remoteStream) => {
-      userVideo.current.srcObject = remoteStream;
-    });
-  
-    // 🔥 IMPORTANT LINE
-    peer.signal(callerSignal);
-  
-    connectionRef.current = peer;
-  };
+
+  if (!trainer?._id) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center text-xl">
+        Please log in as a trainer to access chat.
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
 
@@ -189,11 +188,11 @@ function TrainerChat() {
   onClick={() =>
     navigate("/videocall", {
       state: {
-       roomId:room,
-       iscaller:true,
-       trainer,
-       user,
-      }
+        roomId: room,
+        isCaller: true,
+        trainer,
+        user,
+      },
     })
   }
   className="bg-red-500 px-4 py-2 rounded-xl"

@@ -10,14 +10,6 @@ const Trainer = () => {
 
   const [trainers, setTrainers] = useState([])
 
-  useEffect(()=>{
-    const token = localStorage.getItem("token")
-    if(!token){
-      navigate("/login")
-    }
-  },[])
-
- 
   const fetchTrainers = async () => {
 
     try {

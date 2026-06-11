@@ -202,9 +202,7 @@ const Payment = () => {
               </h1>
 
               <p className="text-red-500 text-xl mt-3">
-
-                {trainer.role}
-
+                {trainer.specialization}
               </p>
 
               <p className="text-gray-400 leading-8 mt-6">

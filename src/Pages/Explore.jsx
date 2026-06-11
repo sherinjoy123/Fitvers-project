@@ -1,5 +1,5 @@
-import React from "react"
-import { motion } from "framer-motion"
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 import {
   FaSearch,
@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa"
 
 const Explore = () => {
+  const navigate = useNavigate();
 
   const categories = [
     "Muscle Gain",
@@ -376,7 +377,10 @@ const Explore = () => {
                     Certified fitness coach helping clients achieve incredible transformations.
                   </p>
 
-                  <button className="w-full mt-6 bg-red-500 hover:bg-red-600 py-4 rounded-2xl font-semibold transition duration-300">
+                  <button
+                    onClick={() => navigate("/trainers")}
+                    className="w-full mt-6 bg-red-500 hover:bg-red-600 py-4 rounded-2xl font-semibold transition duration-300"
+                  >
                     Book Session
                   </button>
 

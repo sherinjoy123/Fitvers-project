@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState,useRef } from "react";
 import { getTrainerBookingsAPI } from "../services/trainerApi";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
@@ -7,15 +7,28 @@ function TrainerDashboard() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const socketRef = useRef(null)
 
-  const token = localStorage.getItem("trainerToken");
+  const handleLogout = () => {
+    // remove auth data
+    localStorage.removeItem("token");
+    localStorage.removeItem("trainer");
+  
+    // disconnect socket safely
+    if (socketRef?.current) {
+      socketRef.current.disconnect();
+    }
+  
+    // redirect
+    navigate("/trainer-login");
+  };
 
   const fetchBookings = async () => {
     try {
       setLoading(true);
 
-      const res = await getTrainerBookingsAPI(token);
+      const res = await getTrainerBookingsAPI();
       console.log("API RESPONSE:", res.data);
 
       if (res.data?.success) {
@@ -164,12 +177,11 @@ function TrainerDashboard() {
       )}
 <div className="p-4">
 <button
-      onClick={() => navigate('/')}
-      className="flex  items-center gap-2 text-white bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-xl transition"
-    >
-      <ArrowLeft size={18} />
-      Back
-    </button>
+  onClick={handleLogout}
+  className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-white"
+>
+  Logout
+</button>
     </div>
     </div>
   );

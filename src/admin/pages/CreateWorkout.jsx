@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-
-import API from "../../services/api";
+import { useState } from "react";
+import adminAPI from "../../services/adminApi";
 
 function CreateWorkout() {
   const [title, setTitle] = useState("");
@@ -21,30 +20,20 @@ function CreateWorkout() {
       setLoading(true);
 
       const formData = new FormData();
-
       formData.append("title", title);
       formData.append("category", category);
       formData.append("description", description);
       formData.append("video", video);
 
-      const res = await API.post(
-        "/api/workouts/addWorkout",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      await adminAPI.post("/api/workouts/addWorkout", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       alert("Workout video added successfully");
-
       setTitle("");
       setCategory("");
       setDescription("");
       setVideoUrl(null);
-
-      console.log(res.data);
     } catch (error) {
       console.log(error);
       alert("Upload failed");
@@ -56,13 +45,9 @@ function CreateWorkout() {
   return (
     <div className="min-h-screen bg-black flex justify-center items-center p-6">
       <div className="w-full max-w-2xl bg-zinc-900 p-8 rounded-2xl shadow-xl">
-
-        <h1 className="text-3xl font-bold text-white mb-6">
-          Create Workout Video
-        </h1>
+        <h1 className="text-3xl font-bold text-white mb-6">Create Workout Video</h1>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-
           <input
             type="text"
             placeholder="Workout Title"
@@ -104,7 +89,6 @@ function CreateWorkout() {
           >
             {loading ? "Uploading..." : "Upload Workout"}
           </button>
-
         </form>
       </div>
     </div>

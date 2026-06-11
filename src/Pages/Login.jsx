@@ -107,12 +107,8 @@ const Login = () => {
         JSON.stringify(result.data.user)
       )
 
-      alert("Login Successful")
-
-      window.location.href = "/"
-
-      // REDIRECT
-      navigate("/")
+      alert("Login Successful");
+      window.location.href = "/";
 
     } catch (error) {
 

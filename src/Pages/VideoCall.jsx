@@ -1,152 +1,191 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Peer from "simple-peer/simplepeer.min.js";
-import io from "socket.io-client";
 import { useLocation } from "react-router-dom";
+import getSocket from "../services/socket";
 
-const socket = io("http://localhost:4000");
+const socket = getSocket();
 
 const VideoCall = () => {
   const location = useLocation();
 
-  console.log(location.state);
-
   const roomId = location.state?.roomId;
-  const isCaller = location.state?.isCaller;
+  const isCaller =
+    location.state?.isCaller ?? location.state?.iscaller ?? false;
+  const incomingSignal = location.state?.callerSignal;
 
   const [stream, setStream] = useState(null);
-  const [callerSignal, setCallerSignal] = useState(null);
+  const [callerSignal, setCallerSignal] = useState(incomingSignal || null);
 
-  const myVideo = useRef();
-  const userVideo = useRef();
-  const connectionRef = useRef();
+  const myVideo = useRef(null);
+  const userVideo = useRef(null);
+  const connectionRef = useRef(null);
 
-  if (!roomId) {
-    return <h1>No Room Found</h1>;
-  }
+  // CAMERA + MIC
+  useEffect(() => {
+    if (!roomId) return;
+
+    navigator.mediaDevices
+      .getUserMedia({
+        video: true,
+        audio: true,
+      })
+      .then((currentStream) => {
+        setStream(currentStream);
+
+        if (myVideo.current) {
+          myVideo.current.srcObject = currentStream;
+        }
+
+        socket.emit("join_room", roomId);
+      })
+      .catch((err) => {
+        console.log("MEDIA ERROR:", err);
+      });
+  }, [roomId]);
+
+  // RECEIVER SIDE — signal from navigation or socket
+  useEffect(() => {
+    if (!isCaller && incomingSignal) {
+      setCallerSignal(incomingSignal);
+    }
+  }, [isCaller, incomingSignal]);
 
   useEffect(() => {
-    navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true,
-    })
-    .then((stream) => {
-      setStream(stream);
-  
-      if (myVideo.current) {
-        myVideo.current.srcObject = stream;
-      }
-  
-      socket.emit("join_room", roomId);
-  
-      // AUTO CALL START (ONLY FOR CALLER)
-      if (isCaller) {
-        startCall(stream);
-      }
-    });
+    const handleIncomingCall = (data) => {
+      setCallerSignal(data.signal);
+    };
+
+    socket.on("incoming-call", handleIncomingCall);
+
+    return () => {
+      socket.off("incoming-call", handleIncomingCall);
+    };
   }, []);
 
-  // CALL USER
+  // CALL ACCEPTED
+  useEffect(() => {
+    const handleCallAccepted = (signal) => {
+      console.log("CALL ACCEPTED");
+
+      if (connectionRef.current) {
+        connectionRef.current.signal(signal);
+      }
+    };
+
+    socket.on("call-accepted", handleCallAccepted);
+
+    return () => {
+      socket.off("call-accepted", handleCallAccepted);
+    };
+  }, []);
+
+  // CALLER
   const callUser = () => {
-    try {
-      console.log("START CALL CLICKED");
-      console.log("STREAM BEFORE PEER =", stream);
-      console.log("Peer =", Peer);
-  
-      const peer = new Peer({
-        initiator: true,
-        trickle: false,
-        stream,
-      });
-  
-      console.log("PEER CREATED", peer);
-  
-      peer.on("signal", (data) => {
-        console.log("SENDING SIGNAL", data);
-  
-        socket.emit("call-user", {
-          roomId,
-          signal: data,
-        });
-      });
-  
-      peer.on("error", (err) => {
-        console.log("PEER ERROR =", err);
-      });
-  
-      peer.on("stream", (remoteStream) => {
-        console.log("REMOTE STREAM RECEIVED");
-  
-        if (userVideo.current) {
-          userVideo.current.srcObject = remoteStream;
-        }
-      });
-  
-      socket.on("call-accepted", (signal) => {
-        console.log("CALL ACCEPTED");
-        peer.signal(signal);
-      });
-  
-      connectionRef.current = peer;
-    } catch (err) {
-      console.log("CALL USER ERROR =", err);
-    }
-  };
-  // ANSWER CALL
-  const startCall = (stream) => {
+    if (!stream) return;
+
     const peer = new Peer({
       initiator: true,
       trickle: false,
       stream,
     });
-  
+
     peer.on("signal", (data) => {
+      console.log("SENDING OFFER");
+
       socket.emit("call-user", {
         roomId,
         signal: data,
       });
     });
-  
+
     peer.on("stream", (remoteStream) => {
-      userVideo.current.srcObject = remoteStream;
+      console.log("REMOTE STREAM RECEIVED");
+
+      if (userVideo.current) {
+        userVideo.current.srcObject = remoteStream;
+      }
     });
-  
-    socket.on("call-accepted", (signal) => {
-      peer.signal(signal);
+
+    peer.on("error", (err) => {
+      console.log("PEER ERROR:", err);
     });
-  
+
     connectionRef.current = peer;
   };
+
+  // RECEIVER
+  const answerCall = () => {
+    if (!stream || !callerSignal) return;
+
+    const peer = new Peer({
+      initiator: false,
+      trickle: false,
+      stream,
+    });
+
+    peer.on("signal", (data) => {
+      socket.emit("answer-call", {
+        roomId,
+        signal: data,
+      });
+    });
+
+    peer.on("stream", (remoteStream) => {
+      if (userVideo.current) {
+        userVideo.current.srcObject = remoteStream;
+      }
+    });
+
+    peer.on("error", (err) => {
+      console.log("ANSWER ERROR:", err);
+    });
+
+    peer.signal(callerSignal);
+
+    connectionRef.current = peer;
+  };
+
+  if (!roomId) {
+    return (
+      <div className="bg-black min-h-screen flex items-center justify-center">
+        <h1 className="text-white text-2xl">No Room Found</h1>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-black min-h-screen text-white flex flex-col items-center justify-center">
+      <h1 className="text-3xl mb-6 font-bold">Video Call</h1>
+
       <div className="flex gap-5">
         <video
-          playsInline
-          muted
           ref={myVideo}
           autoPlay
-          className="w-72 rounded-xl border"
+          playsInline
+          muted
+          className="w-80 h-60 border rounded-xl"
         />
 
         <video
-          playsInline
           ref={userVideo}
           autoPlay
-          className="w-72 rounded-xl border"
+          playsInline
+          className="w-80 h-60 border rounded-xl"
         />
       </div>
 
-      <div className="mt-5 flex gap-4">
+      <div className="mt-6">
         {isCaller ? (
           <button
             onClick={callUser}
-            className="bg-green-500 px-5 py-2 rounded-xl"
+            className="bg-green-500 px-6 py-3 rounded-xl"
           >
             Start Call
           </button>
         ) : callerSignal ? (
           <button
             onClick={answerCall}
-            className="bg-blue-500 px-5 py-2 rounded-xl"
+            className="bg-blue-500 px-6 py-3 rounded-xl"
           >
             Answer Call
           </button>

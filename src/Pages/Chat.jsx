@@ -1,11 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { FaPaperPlane, FaVideo, FaTimes } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
-import io from "socket.io-client";
-
+import getSocket from "../services/socket";
 import { getMessagesAPI, saveMessageAPI } from "../services/chatApi";
 
-const socket = io("http://localhost:4000");
+const socket = getSocket();
 
 const Chat = () => {
   const navigate = useNavigate();
@@ -121,13 +120,27 @@ console.log("ROOM =", room);
       console.log(err);
     }
   };
+  // INCOMING VIDEO CALL
+  useEffect(() => {
+    const handleIncomingCall = (data) => {
+      if (window.confirm("Incoming video call from trainer. Answer?")) {
+        navigate("/videocall", {
+          state: {
+            trainer,
+            user,
+            roomId: room,
+            isCaller: false,
+            callerSignal: data.signal,
+          },
+        });
+      }
+    };
+
+    socket.on("incoming-call", handleIncomingCall);
+    return () => socket.off("incoming-call", handleIncomingCall);
+  }, [room, trainer, user, navigate]);
+
   const startVideoCall = () => {
-    console.log("VIDEO CALL STATE =", {
-      trainer,
-      user,
-      roomId: room,
-    });
-  
     navigate("/videocall", {
       state: {
         trainer,
@@ -223,7 +236,7 @@ console.log("ROOM =", room);
         </button>
 
         <button
-          onClick={() => navigate("/trainers")}
+          onClick={() => navigate("/")}
           className="bg-gray-700 px-4 py-3 rounded-xl"
         >
           <FaTimes />

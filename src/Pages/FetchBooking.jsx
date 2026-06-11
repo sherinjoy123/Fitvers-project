@@ -3,7 +3,6 @@ import API from '../services/api'
 import { motion } from "framer-motion"
 import {
     FaCheckCircle,
-    FaComments,
     FaMoneyBillWave
 } from "react-icons/fa"
 import { useNavigate } from 'react-router-dom'
@@ -104,9 +103,7 @@ const FetchBooking = () => {
                                             </h1>
 
                                             <p className="text-red-500 mt-2 text-lg">
-
-                                                {item.trainer?.role}
-
+                                                {item.trainer?.specialization}
                                             </p>
 
                                         </div>

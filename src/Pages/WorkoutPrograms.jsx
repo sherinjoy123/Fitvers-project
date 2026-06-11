@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import API from "../services/api";
 import { motion } from "framer-motion";
+import { mediaUrl } from "../services/config";
 
 const WorkoutPrograms = () => {
   const [workouts, setWorkouts] = useState([]);
-
-  useEffect(() => {
-    fetchWorkouts();
-  }, []);
 
   const fetchWorkouts = async () => {
     try {
@@ -17,6 +14,10 @@ const WorkoutPrograms = () => {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    fetchWorkouts();
+  }, []);
 
   return (
     <div className="bg-black text-white min-h-screen">
@@ -59,7 +60,7 @@ const WorkoutPrograms = () => {
                   className="w-full h-[250px] object-cover"
                 >
                   <source
-                    src={`http://localhost:4000/${workout.videoUrl}`}
+                    src={mediaUrl(workout.videoUrl)}
                     type="video/mp4"
                   />
                 </video>

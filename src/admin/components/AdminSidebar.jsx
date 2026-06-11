@@ -1,4 +1,3 @@
-import React, { useState } from "react"
 import { Link } from "react-router-dom"
 import {
   LayoutDashboard,
@@ -12,11 +11,11 @@ const AdminSidebar = () => {
 
   const navigate = useNavigate()
 
-  const handleLogout=()=>{
-   localStorage.removeItem("token")
-   localStorage.removeItem("admin")
-     navigate('/admin-login')
-  }
+  const handleLogout = () => {
+    localStorage.removeItem("adminToken");
+    localStorage.removeItem("admin");
+    navigate("/admin/login");
+  };
   return (
     <div className="w-64 bg-black text-white p-5">
 

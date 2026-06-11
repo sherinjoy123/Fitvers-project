@@ -4,13 +4,10 @@ import API from "../services/api";
 const MyWorkouts=()=> {
   const [workouts, setWorkouts] = useState([]);
 
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  useEffect(() => {
-    fetchWorkouts();
-  }, []);
+  const user = JSON.parse(localStorage.getItem("user") || "null");
 
   const fetchWorkouts = async () => {
+    if (!user?._id) return;
     try {
       const res = await API.get(
         `/api/tracks/user/${user._id}`
@@ -23,6 +20,10 @@ const MyWorkouts=()=> {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    fetchWorkouts();
+  }, []);
 
   const completeWorkout = async (id) => {
     try {
@@ -70,7 +71,6 @@ const MyWorkouts=()=> {
             key={workout._id}
             className="bg-zinc-900 p-4 rounded-xl"
           >
-            <img src={workout.videoUrl} alt="" />
             <h2 className="text-xl font-semibold">
               {workout.workoutName}
             </h2>

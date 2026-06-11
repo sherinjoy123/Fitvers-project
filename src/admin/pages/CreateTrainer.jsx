@@ -41,15 +41,9 @@ const CreateTrainer = () => {
     reqBody.append("price",price)
     reqBody.append("image", image)
 
-    const token = localStorage.getItem("token")
-    console.log(token);
-
     const reqHeader = {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`
-      }
-    }
+      headers: { "Content-Type": "multipart/form-data" },
+    };
 
     try {
 

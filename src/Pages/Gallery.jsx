@@ -1,287 +1,183 @@
-import React, { useEffect, useState } from "react"
-import { motion } from "framer-motion"
-import {
-  FaHeart,
-  FaComment,
-  FaShare,
-} from "react-icons/fa"
-import API from "../services/api"
-
-
-const reelsData = [
-  {
-    title: "Chest Workout",
-    username: "@fitverse",
-    video: "https://www.youtube.com/embed/89e518dl4I8",
-  },
-
-  {
-    title: "Fat Loss Cardio",
-    username: "@fitnessworld",
-    video: "https://www.youtube.com/embed/gC_L9qAHVJ8",
-  },
-
-  {
-    title: "Leg Day Training",
-    username: "@gympower",
-    video: "https://www.youtube.com/embed/SwYN7mTi6HM",
-  },
-
-  {
-    title: "Abs Workout Routine",
-    username: "@fitlife",
-    video: "https://www.youtube.com/embed/1919eTCoESo",
-  },
-
-  {
-    title: "Muscle Gain Workout",
-    username: "@bodybuilding",
-    video: "https://www.youtube.com/embed/U0bhE67HuDY",
-  },
-
-  {
-    title: "HIIT Workout",
-    username: "@hiittraining",
-    video: "https://www.youtube.com/embed/ml6cT4AZdqI",
-  },
-]
-
-const images =[
-  {
-    image:"https://plus.unsplash.com/premium_photo-1664301437780-ee46787734d5?w=1600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Z3ltJTIwcGhvdG9zfGVufDB8fDB8fHww"
-  },
-  {
-    image:"https://images.unsplash.com/photo-1676109829011-a9f0f3e40f00?w=1600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Z3ltJTIwcGhvdG9zfGVufDB8fDB8fHww"
-  },
-  {
-    image:"https://plus.unsplash.com/premium_photo-1661670892906-b1cffa07584d?w=1600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Z3ltJTIwaW1hZ2VzfGVufDB8fDB8fHww"
-  }
-]
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { FaHeart, FaComment, FaShare } from "react-icons/fa";
+import API from "../services/api";
+import { mediaUrl } from "../services/config";
 
 const Gallery = () => {
+  const [posts, setPosts] = useState([]);
+  const [commentText, setCommentText] = useState({});
 
-  const [posts, setPosts ] = useState([])
-  useEffect(()=>{
-    fetchPosts()
-  },[])
-
-  const fetchPosts = async()=>{
+  // FETCH POSTS
+  const fetchPosts = async () => {
     try {
-      const result = await API.get("/api/posts/getpost")
-      setPosts(result.data)
+      const result = await API.get("/api/posts/getpost");
+      setPosts(result.data);
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
-  
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  // LIKE
+  const handleLike = async (postId) => {
+    try {
+      await API.put(`/api/posts/like/${postId}`);
+      fetchPosts();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // COMMENT
+  const handleComment = async (postId) => {
+    try {
+      await API.post(`/api/posts/comment/${postId}`, {
+        text: commentText[postId],
+      });
+
+      setCommentText({
+        ...commentText,
+        [postId]: "",
+      });
+
+      fetchPosts();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
-    <div className="bg-black min-h-screen text-white overflow-hidden">
+    <div className="bg-black min-h-screen text-white">
 
+      {/* HERO */}
+      <section className="text-center pt-32 pb-16">
+        <h1 className="text-5xl font-bold">
+          Fitness <span className="text-red-500">Gallery</span>
+        </h1>
+        <p className="text-gray-400 mt-4">
+          Watch workout videos, motivation & fitness content
+        </p>
+      </section>
 
+      {/* IMAGE GRID */}
+      <section className="px-6 lg:px-20 pb-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
+          {posts.map((post) => (
+            <motion.div
+              key={post._id}
+              whileHover={{ y: -8 }}
+              className="bg-[#111] rounded-2xl overflow-hidden border border-gray-800"
+            >
+              {/* MEDIA */}
+              {post.mediaType === "image" ? (
+                <img
+                  src={mediaUrl(post.mediaUrl)}
+                  className="w-full h-[280px] object-cover"
+                />
+              ) : (
+                <video
+                  className="w-full h-[280px] object-cover"
+                  controls
+                  muted
+                  autoPlay
+                  loop
+                >
+                  <source
+                    src={mediaUrl(post.mediaUrl)}
+                    type="video/mp4"
+                  />
+                </video>
+              )}
 
-      {/* HERO SECTION */}
-      <section className="relative px-6 lg:px-20 pt-32 pb-20">
+              <div className="p-5">
 
-        {/* GLOW EFFECTS */}
-        <div className="absolute top-10 left-10 w-72 h-72 bg-red-500/20 blur-3xl rounded-full"></div>
+                {/* TITLE */}
+                <h2 className="text-xl font-bold">{post.title}</h2>
+                <p className="text-gray-400 text-sm mt-1">
+                  {post.description}
+                </p>
 
-        <div className="absolute bottom-0 right-0 w-80 h-80 bg-red-500/10 blur-3xl rounded-full"></div>
+                {/* ACTIONS */}
+                <div className="flex justify-between items-center mt-4 text-gray-300">
 
-        <div className="relative z-10 text-center max-w-4xl mx-auto">
+                  {/* LIKE */}
+                  <button
+                    onClick={() => handleLike(post._id)}
+                    className="flex items-center gap-2 hover:text-red-500"
+                  >
+                    <FaHeart />
+                    {post.likes?.length || 0}
+                  </button>
 
-          <motion.h1
-            initial={{ opacity: 0, y: -40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-            className="text-5xl lg:text-7xl font-black leading-tight"
-          >
-            Fitness
-            <span className="text-red-500"> Gallery</span>
-          </motion.h1>
+                  {/* COMMENT COUNT */}
+                  <div className="flex items-center gap-2 text-blue-400">
+                    <FaComment />
+                    {post.comments?.length || 0}
+                  </div>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 1 }}
-            className="text-gray-400 text-lg leading-8 mt-8"
-          >
-            Watch trending workout videos, transformation clips,
-            gym motivation, and fitness content.
-          </motion.p>
+                  {/* SHARE */}
+                  <button className="flex items-center gap-2 hover:text-green-400">
+                    <FaShare />
+                    Share
+                  </button>
+                </div>
+
+                {/* COMMENT INPUT */}
+                <div className="mt-4 flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Write a comment..."
+                    value={commentText[post._id] || ""}
+                    onChange={(e) =>
+                      setCommentText({
+                        ...commentText,
+                        [post._id]: e.target.value,
+                      })
+                    }
+                    className="flex-1 p-2 rounded bg-gray-800 border border-gray-700"
+                  />
+
+                  <button
+                    onClick={() => handleComment(post._id)}
+                    className="bg-blue-600 px-4 rounded hover:bg-blue-700"
+                  >
+                    Post
+                  </button>
+                </div>
+
+                {/* COMMENTS */}
+                <div className="mt-4 space-y-2 max-h-40 overflow-y-auto">
+
+                  {post.comments?.map((comment) => (
+                    <div
+                      key={comment._id}
+                      className="bg-gray-900 p-2 rounded"
+                    >
+                      <p className="text-red-400 text-sm font-semibold">
+                        {comment.userName}
+                      </p>
+                      <p className="text-gray-300 text-sm">
+                        {comment.text}
+                      </p>
+                    </div>
+                  ))}
+
+                </div>
+
+              </div>
+            </motion.div>
+          ))}
 
         </div>
       </section>
 
-      {/* CREATIVE IMAGE SECTION */}
-<section className="px-6 lg:px-20 pb-24">
-
-<div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[250px] gap-6">
-
-  {/* BIG IMAGE */}
-  <motion.div
-    whileHover={{ scale: 1.02 }}
-    className="md:col-span-2 md:row-span-2 overflow-hidden rounded-[35px] relative group"
-  >
-    <img
-      src={images[0].image}
-      alt="gym"
-      className="w-full h-full object-cover group-hover:scale-110 transition duration-700"
-    />
-
-    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-
-    <h2 className="absolute bottom-6 left-6 text-3xl font-black">
-      Fitness Lifestyle
-    </h2>
-  </motion.div>
-
-  {/* SMALL TOP */}
-  <motion.div
-    whileHover={{ y: -10 }}
-    className="overflow-hidden rounded-[30px] relative group"
-  >
-    <img
-      src={images[1].image}
-      alt="gym"
-      className="w-full h-full object-cover group-hover:scale-110 transition duration-700"
-    />
-
-    <div className="absolute inset-0 bg-black/30"></div>
-
-    <p className="absolute bottom-4 left-4 font-semibold text-lg">
-      Gym Motivation
-    </p>
-  </motion.div>
-
-  {/* TALL IMAGE */}
-  <motion.div
-    whileHover={{ scale: 1.03 }}
-    className="md:row-span-2 overflow-hidden rounded-[35px] relative group"
-  >
-    <img
-      src={images[2].image}
-      alt="gym"
-      className="w-full h-full object-cover group-hover:scale-110 transition duration-700"
-    />
-
-    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80"></div>
-
-    <h2 className="absolute bottom-6 left-6 text-2xl font-bold">
-      Beast Mode
-    </h2>
-  </motion.div>
-
-  {/* WIDE IMAGE */}
-  <motion.div
-    whileHover={{ scale: 1.02 }}
-    className="md:col-span-2 overflow-hidden rounded-[30px] relative group"
-  >
-    <img
-      src={images[1].image}
-      alt="gym"
-      className="w-full h-full object-cover group-hover:scale-110 transition duration-700"
-    />
-
-    <div className="absolute inset-0 bg-black/40"></div>
-
-    <h2 className="absolute bottom-5 left-5 text-2xl font-bold">
-      Stronger Every Day
-    </h2>
-  </motion.div>
-
-</div>
-
-</section>
-
-      {/* REELS GRID */}
-     {/* REELS SLIDER SECTION */}
-{/* REELS HORIZONTAL SCROLL SECTION */}
-<section className="px-6 lg:px-20 pb-24 relative z-10">
-
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-
-    {
-      posts.map((post) => (
-
-        <motion.div
-          key={post._id}
-          whileHover={{ y: -10 }}
-          className="bg-[#111] rounded-3xl overflow-hidden border border-gray-800"
-        >
-
-          {
-            post.mediaType === "image" ? (
-
-              <img
-                src={`http://localhost:4000/${post.mediaUrl}`}
-                alt={post.title}
-                className="w-full h-[300px] object-cover"
-              />
-
-            ) : (
-
-              <video 
-                autoPlay
-                loop
-                controls
-                muted
-                playsInline
-                className="w-full h-[300px] object-cover"
-              >
-                <source
-                  src={`http://localhost:4000/${post.mediaUrl}`}
-                  type="video/mp4"
-                />
-              </video>
-
-            )
-          }
-
-          <div className="p-5">
-
-            <h2 className="text-2xl font-bold mb-2">
-              {post.title}
-            </h2>
-
-            <p className="text-gray-400">
-              {post.description}
-            </p>
-
-            <div className="flex items-center gap-6 mt-5 text-gray-300">
-
-              <button className="flex items-center gap-2 hover:text-red-500">
-                <FaHeart />
-                Like
-              </button>
-
-              <button className="flex items-center gap-2 hover:text-blue-400">
-                <FaComment />
-                Comment
-              </button>
-
-              <button className="flex items-center gap-2 hover:text-green-400">
-                <FaShare />
-                Share
-              </button>
-
-            </div>
-
-          </div>
-          
-
-        </motion.div>
-
-      ))
-    }
-
-  </div>
-
-</section>
-
     </div>
-  )
-}
+  );
+};
 
-export default Gallery
+export default Gallery;

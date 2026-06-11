@@ -10,10 +10,6 @@ const TrainerProgress=()=> {
 
   const [workouts, setWorkouts] = useState([]);
 
-  useEffect(() => {
-    fetchProgress();
-  }, []);
-
   const fetchProgress = async () => {
     try {
       const res = await API.get(
@@ -25,6 +21,10 @@ const TrainerProgress=()=> {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    fetchProgress();
+  }, []);
 
   const completed = workouts.filter(
     (w) => w.status === "Completed"

@@ -8,10 +8,6 @@ const Profile = ({ user, setUser }) => {
   const fileRef = useRef(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    fetchProfile()
-  }, [])
-
   const fetchProfile = async () => {
     try {
 
@@ -38,6 +34,10 @@ const Profile = ({ user, setUser }) => {
     }
   }
 
+  useEffect(() => {
+    fetchProfile()
+  }, [])
+
   const handleImageClick = () => {
     fileRef.current?.click()
   }
@@ -60,13 +60,13 @@ const Profile = ({ user, setUser }) => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data"
-          }
+            "Content-Type": "multipart/form-data",
+          },
         }
-      )
+      );
 
-      setUser(res.data)
-      localStorage.setItem("user", JSON.stringify(res.data))
+      setUser(res.data.user);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
 
       alert("Profile updated")
 

@@ -12,6 +12,13 @@ const Navbar = ({ user, setUser }) => {
   const [open, setOpen] = useState(false)
 
   const [menuOpen, setMenuOpen] = useState(false)
+  const [picVersion, setPicVersion] = useState(0)
+
+  useEffect(() => {
+    if (user?.profilePic) {
+      setPicVersion(Date.now())
+    }
+  }, [user?.profilePic])
 
   // Logout
   const handleLogout = () => {
@@ -187,7 +194,7 @@ const Navbar = ({ user, setUser }) => {
                 <img
                   src={
                     user?.profilePic
-                      ? user.profilePic + "?v=" + Date.now()
+                      ? `${user.profilePic}?v=${picVersion}`
                       : "https://cdn-icons-png.flaticon.com/512/149/149071.png"
                   }
                   alt="profile"

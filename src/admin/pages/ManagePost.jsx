@@ -1,139 +1,77 @@
-import React, { useEffect, useState } from "react"
-import API from "../../services/api"
-import { motion } from "framer-motion"
-import { Trash2 } from "lucide-react"
+import { useEffect, useState } from "react";
+import adminAPI from "../../services/adminApi";
+import { motion } from "framer-motion";
+import { Trash2 } from "lucide-react";
+import { mediaUrl } from "../../services/config";
 
 const ManagePost = () => {
-
-  const [posts, setPosts] = useState([])
-
-  const token = localStorage.getItem("token")
+  const [posts, setPosts] = useState([]);
 
   const getPosts = async () => {
-
     try {
-
-      const response = await API.get("/api/posts/getpost")
-
-      setPosts(response.data)
-
+      const response = await adminAPI.get("/api/posts/getpost");
+      setPosts(response.data);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
-    getPosts()
-  }, [])
+    getPosts();
+  }, []);
 
   const handleDelete = async (id) => {
-
     try {
-
-      await API.delete(`/api/posts/delete-post/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-
-      alert("Post deleted")
-
-      getPosts()
-
+      await adminAPI.delete(`/api/posts/delete-post/${id}`);
+      alert("Post deleted");
+      getPosts();
     } catch (error) {
-      console.log(error)
+      console.log(error);
+      alert("Delete failed");
     }
-  }
+  };
 
   return (
+    <div>
+      <h1 className="text-3xl font-bold mb-8">Manage Posts</h1>
 
-    <div className="min-h-screen bg-black text-white p-6 lg:p-10">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {posts.map((post) => (
+          <motion.div
+            key={post._id}
+            className="bg-white rounded-xl shadow overflow-hidden"
+          >
+            {post.mediaType === "image" ? (
+              <img
+                src={mediaUrl(post.mediaUrl)}
+                alt={post.title}
+                className="w-full h-48 object-cover"
+              />
+            ) : (
+              <video
+                src={mediaUrl(post.mediaUrl)}
+                className="w-full h-48 object-cover"
+                controls
+              />
+            )}
 
-      {/* HEADING */}
-      <div className="mb-10">
+            <div className="p-4">
+              <h2 className="font-bold text-lg">{post.title}</h2>
+              <p className="text-gray-500 text-sm mt-1">{post.description}</p>
 
-        <h1 className="text-4xl font-black">
-          Manage <span className="text-red-500">Posts</span>
-        </h1>
-
-        <p className="text-gray-400 mt-2">
-          Delete or manage all uploaded fitness posts.
-        </p>
-
+              <button
+                onClick={() => handleDelete(post._id)}
+                className="mt-4 flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+              >
+                <Trash2 size={16} />
+                Delete
+              </button>
+            </div>
+          </motion.div>
+        ))}
       </div>
-
-      {/* POSTS GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-
-        {
-          posts.map((post) => (
-
-            <motion.div
-              key={post._id}
-              whileHover={{ y: -8 }}
-              className="bg-[#111] rounded-3xl overflow-hidden border border-gray-800 shadow-lg"
-            >
-
-              {/* IMAGE / VIDEO */}
-              {
-                post.mediaType === "image" ? (
-
-                  <img
-                    src={`http://localhost:4000/${post.mediaUrl}`}
-                    alt={post.title}
-                    className="w-full h-[280px] object-cover"
-                  />
-
-                ) : (
-
-                  <video
-                    controls
-                    className="w-full h-[280px] object-cover"
-                  >
-                    <source
-                      src={`http://localhost:4000/${post.mediaUrl}`}
-                      type="video/mp4"
-                    />
-                  </video>
-
-                )
-              }
-
-              {/* CONTENT */}
-              <div className="p-5">
-
-                <h2 className="text-2xl font-bold mb-2">
-                  {post.title}
-                </h2>
-
-                <p className="text-gray-400 text-sm leading-6">
-                  {post.description}
-                </p>
-
-                {/* DELETE BUTTON */}
-                <button
-                  onClick={() => handleDelete(post._id)}
-                  className="mt-5 w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 transition duration-300 py-3 rounded-xl font-semibold"
-                >
-
-                  <Trash2 size={18} />
-
-                  Delete Post
-
-                </button>
-
-              </div>
-
-            </motion.div>
-
-          ))
-        }
-
-      </div>
-
     </div>
+  );
+};
 
-  )
-}
-
-export default ManagePost
+export default ManagePost;

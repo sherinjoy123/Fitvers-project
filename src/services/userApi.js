@@ -1,5 +1,5 @@
-import axios from "axios";
+import API from "./api";
 
 export const getUserByIdAPI = (id) => {
-  return axios.get(`http://localhost:4000/api/auth/${id}`);
+  return API.get(`/api/auth/${id}`);
 };
