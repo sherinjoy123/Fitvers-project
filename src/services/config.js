@@ -1,4 +1,7 @@
 export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:4000";
+
+console.log(API_URL);
+console.log(import.meta.env.VITE_API_URL);
 export const SOCKET_URL =
   import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || "http://localhost:4000";
 

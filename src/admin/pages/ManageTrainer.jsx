@@ -11,7 +11,7 @@ const ManageTrainer = () => {
   const [selectedTrainer, setSelectedTrainer] = useState(null);
   const [preview, setPreview] = useState("");
   const [image, setImage] = useState(null);
-
+  const token = localStorage.getItem("token");
   // GET TRAINERS
   const getAllTrainers = async () => {
     try {
@@ -44,27 +44,42 @@ const ManageTrainer = () => {
   const handleUpdate = async () => {
     try {
       if (!selectedTrainer?._id) return;
-
+  
+      const token = localStorage.getItem("token"); // ✅ FIX
+  
       const formData = new FormData();
+  
       formData.append("name", selectedTrainer.name || "");
       formData.append("specialization", selectedTrainer.specialization || "");
       formData.append("experience", selectedTrainer.experience || "");
       formData.append("price", selectedTrainer.price || "");
-
+      formData.append("description", selectedTrainer.description || "");
+  
       if (image) {
         formData.append("image", image);
       }
-
-      await updateTrainerAPI(selectedTrainer._id, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
+  
+      console.log("IMAGE FILE:", image);
+  
+      await updateTrainerAPI(
+        selectedTrainer._id,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
       alert("Trainer Updated Successfully");
+  
       setShowEdit(false);
       setSelectedTrainer(null);
       setImage(null);
       setPreview("");
+  
       getAllTrainers();
+  
     } catch (error) {
       console.log(error);
     }
